@@ -11,8 +11,6 @@ On this page, you'll learn in detail about how to query a GraphQL server.
 
 ## Fields
 
-At its simplest, GraphQL is about asking for specific fields on objects. Let's start by looking at a very simple query and the result we get when we run it:
-
 ```graphql
 # { "graphiql": true }
 {
@@ -22,13 +20,9 @@ At its simplest, GraphQL is about asking for specific fields on objects. Let's s
 }
 ```
 
-You can see immediately that the query has exactly the same shape as the result. This is essential to GraphQL, because you always get back what you expect, and the server knows exactly what fields the client is asking for.
+필드는 객체를 참조할 수도 있습니다. 이 경우 해당 개체에 대한 필드의 sub-selection을 만들 수 있습니다.
 
-The field `name` returns a `String` type, in this case the name of the main hero of Star Wars, `"R2-D2"`.
-
-> Oh, one more thing - the query above is *interactive*. That means you can change it as you like and see the new result. Try adding an `appearsIn` field to the `hero` object in the query, and see the new result.
-
-In the previous example, we just asked for the name of our hero which returned a String, but fields can also refer to Objects. In that case, you can make a *sub-selection* of fields for that object. GraphQL queries can traverse related objects and their fields, letting clients fetch lots of related data in one request, instead of making several roundtrips as one would need in a classic REST architecture.
+클라이언트가 classic REST architecture에서 필요로 하는 것처럼 여러 번 왕복하는 대신 한 번의 요청으로 많은 관련 데이터를 가져올 수 있습니다.
 
 ```graphql
 # { "graphiql": true }
@@ -43,12 +37,7 @@ In the previous example, we just asked for the name of our hero which returned a
 }
 ```
 
-Note that in this example, the `friends` field returns an array of items. GraphQL queries look the same for both single items or lists of items, however we know which one to expect based on what is indicated in the schema.
-
-
 ## Arguments
-
-If the only thing we could do was traverse objects and their fields, GraphQL would already be a very useful language for data fetching. But when you add the ability to pass arguments to fields, things get much more interesting.
 
 ```graphql
 # { "graphiql": true }
@@ -60,7 +49,9 @@ If the only thing we could do was traverse objects and their fields, GraphQL wou
 }
 ```
 
-In a system like REST, you can only pass a single set of arguments - the query parameters and URL segments in your request. But in GraphQL, every field and nested object can get its own set of arguments, making GraphQL a complete replacement for making multiple API fetches. You can even pass arguments into scalar fields, to implement data transformations once on the server, instead of on every client separately.
+REST와 같은 시스템에서는 single set of arguments(query parameters and URL segments)만 전달.
+
+GraphQL에서는 모든 필드와 중첩 객체가 고유한 인수 집합을 얻을 수 있으므로 GraphQL을 여러 API 가져오기가 가능합니다.
 
 ```graphql
 # { "graphiql": true }
@@ -72,14 +63,13 @@ In a system like REST, you can only pass a single set of arguments - the query p
 }
 ```
 
-Arguments can be of many different types. In the above example, we have used an Enumeration type, which represents one of a finite set of options (in this case, units of length, either `METER` or `FOOT`). GraphQL comes with a default set of types, but a GraphQL server can also declare its own custom types, as long as they can be serialized into your transport format.
-
 [Read more about the GraphQL type system here.](/learn/schema)
-
 
 ## Aliases
 
-If you have a sharp eye, you may have noticed that, since the result object fields match the name of the field in the query but don't include arguments, you can't directly query for the same field with different arguments. That's why you need _aliases_ - they let you rename the result of a field to anything you want.
+필드 결과의 이름을 원하는 대로 바꿀 수 있음
+
+별칭을 지정할 수 있으므로 한 번의 요청으로 두 결과를 모두 얻을 수 있음
 
 ```graphql
 # { "graphiql": true }
@@ -93,14 +83,9 @@ If you have a sharp eye, you may have noticed that, since the result object fiel
 }
 ```
 
-In the above example, the two `hero` fields would have conflicted, but since we can alias them to different names, we can get both results in one request.
-
-
 ## Fragments
 
-Let's say we had a relatively complicated page in our app, which lets us look at two heroes side by side, along with their friends. You can imagine that such a query could quickly get complicated, because we would need to repeat the fields at least once - one for each side of the comparison.
-
-That's why GraphQL includes reusable units called _fragments_. Fragments let you construct sets of fields, and then include them in queries where you need to. Here's an example of how you could solve the above situation using fragments:
+재사용 가능한 단위
 
 ```graphql
 # { "graphiql": true }
@@ -122,11 +107,9 @@ fragment comparisonFields on Character {
 }
 ```
 
-You can see how the above query would be pretty repetitive if the fields were repeated. The concept of fragments is frequently used to split complicated application data requirements into smaller chunks, especially when you need to combine lots of UI components with different fragments into one initial data fetch.
-
 ### Using variables inside fragments
 
-It is possible for fragments to access variables declared in the query or mutation. See [variables](#variables).
+선언된 변수에 액세스
 
 ```graphql
 # { "graphiql": true }
@@ -154,9 +137,9 @@ fragment comparisonFields on Character {
 
 ## Operation name
 
-Up until now, we have been using a shorthand syntax where we omit both the `query` keyword and the query name, but in production apps it's useful to use these to make our code less ambiguous.
+`query` 키워드와 query name을 모두 생략하는 축약형 구문을 사용했지만 프로덕션 앱에서는 코드를 덜 모호하게 만드는 데 사용하는 것이 유용합니다.
 
-Here’s an example that includes the keyword `query` as _operation type_ and `HeroNameAndFriends` as _operation name_ :
+문제가 발생하면(네트워크 로그 또는 GraphQL 서버의 로그에 오류가 표시됨, 디버깅 및 서버 측 로깅에 매우 유용) 이름으로 식별하는 것이 더 쉽습니다.
 
 ```graphql
 # { "graphiql": true }
@@ -170,26 +153,19 @@ query HeroNameAndFriends {
 }
 ```
 
-The _operation type_ is either _query_, _mutation_, or _subscription_ and describes what type of operation you're intending to do. The operation type is required unless you're using the query shorthand syntax, in which case you can't supply a name or variable definitions for your operation.
-
-The _operation name_ is a meaningful and explicit name for your operation. It is only required in multi-operation documents, but its use is encouraged because it is very helpful for debugging and server-side logging. 
-When something goes wrong (you see errors either in your network logs, or in the logs of your GraphQL server) it is easier to identify a query in your codebase by name instead of trying to decipher the contents.
-Think of this just like a function name in your favorite programming language. 
-For example, in JavaScript we can easily work only with anonymous functions, but when we give a function a name, it's easier to track it down, debug our code, 
-and log when it's called. In the same way, GraphQL query and mutation names, along with fragment names, can be a useful debugging tool on the server side to identify 
-different GraphQL requests.
-
 ## Variables
 
-So far, we have been writing all of our arguments inside the query string. But in most applications, the arguments to fields will be dynamic: For example, there might be a dropdown that lets you select which Star Wars episode you are interested in, or a search field, or a set of filters.
+동적 인수를 쿼리 문자열에 직접 전달하는 것은 좋은 생각이 아닙니다.
 
-It wouldn't be a good idea to pass these dynamic arguments directly in the query string, because then our client-side code would need to dynamically manipulate the query string at runtime, and serialize it into a GraphQL-specific format. Instead, GraphQL has a first-class way to factor dynamic values out of the query, and pass them as a separate dictionary. These values are called _variables_.
+그러면 클라이언트 측 코드가 런타임에 쿼리 문자열을 동적으로 조작하고 GraphQL 명세로 serialize해야 하기 때문입니다.
+
+대신 GraphQL에는 쿼리에서 동적 값을 전달하는 방법이 있습니다. 이러한 값을 Variables라고 합니다.
 
 When we start working with variables, we need to do three things:
 
-1. Replace the static value in the query with `$variableName`
-2. Declare `$variableName` as one of the variables accepted by the query
-3. Pass `variableName: value` in the separate, transport-specific (usually JSON) variables dictionary
+1. 쿼리 값을 `$variableName`으로 바꿉니다.
+2. `$variableName` 변수를 선언
+3. 일반적으로 JSON형태로 변수 값을 전달 `variableName: value`
 
 Here's what it looks like all together:
 
@@ -205,23 +181,7 @@ query HeroNameAndFriends($episode: Episode) {
 }
 ```
 
-Now, in our client code, we can simply pass a different variable rather than needing to construct an entirely new query. This is also in general a good practice for denoting which arguments in our query are expected to be dynamic - we should never be doing string interpolation to construct queries from user-supplied values.
-
-
-### Variable definitions
-
-The variable definitions are the part that looks like `($episode: Episode)` in the query above. It works just like the argument definitions for a function in a typed language. It lists all of the variables, prefixed by `$`, followed by their type, in this case `Episode`.
-
-All declared variables must be either scalars, enums, or input object types. So if you want to pass a complex object into a field, you need to know what input type that matches on the server. Learn more about input object types on the Schema page.
-
-Variable definitions can be optional or required. In the case above, since there isn't an `!` next to the `Episode` type, it's optional. But if the field you are passing the variable into requires a non-null argument, then the variable has to be required as well.
-
-To learn more about the syntax for these variable definitions, it's useful to learn the GraphQL schema language. The schema language is explained in detail on the Schema page.
-
-
 ### Default variables
-
-Default values can also be assigned to the variables in the query by adding the default value after the type declaration. 
 
 ```graphql
 query HeroNameAndFriends($episode: Episode = JEDI) {
@@ -234,11 +194,9 @@ query HeroNameAndFriends($episode: Episode = JEDI) {
 }
 ```
 
-When default values are provided for all variables, you can call the query without passing any variables. If any variables are passed as part of the variables dictionary, they will override the defaults. 
-
 ## Directives
 
-We discussed above how variables enable us to avoid doing manual string interpolation to construct dynamic queries. Passing variables in arguments solves a pretty big class of these problems, but we might also need a way to dynamically change the structure and shape of our queries using variables. For example, we can imagine a UI component that has a summarized and detailed view, where one includes more fields than the other.
+변수를 사용하여 쿼리의 구조와 모양을 동적으로 변경하는 방법도 필요할 수 있습니다.
 
 Let's construct a query for such a component:
 
@@ -254,23 +212,20 @@ query Hero($episode: Episode, $withFriends: Boolean!) {
 }
 ```
 
-Try editing the variables above to instead pass `true` for `withFriends`, and see how the result changes.
+Directives은 fields 또는 Fragments에 첨부될 수 있으며 서버가 원하는 방식으로 쿼리 실행에 영향을 줄 수 있습니다.
 
-We needed to use a new feature in GraphQL called a _directive_. A directive can be attached to a field or fragment inclusion, and can affect execution of the query in any way the server desires. The core GraphQL specification includes exactly two directives, which must be supported by any spec-compliant GraphQL server implementation:
+GraphQL 서버 구현에서 지원해야 하는 정확히 두 개의 지시문이 포함되어 있습니다.
 
 - `@include(if: Boolean)` Only include this field in the result if the argument is `true`.
 - `@skip(if: Boolean)` Skip this field if the argument is `true`.
 
-Directives can be useful to get out of situations where you otherwise would need to do string manipulation to add and remove fields in your query. Server implementations may also add experimental features by defining completely new directives.
-
+완전히 새로운 지시문을 정의하여 실험적 기능을 추가할 수도 있습니다.
 
 ## Mutations
 
-Most discussions of GraphQL focus on data fetching, but any complete data platform needs a way to modify server-side data as well.
+서버 측 데이터도 수정할 수 있는 방법이 필요합니다.
 
-In REST, any request might end up causing some side-effects on the server, but by convention it's suggested that one doesn't use `GET` requests to modify data. GraphQL is similar - technically any query could be implemented to cause a data write. However, it's useful to establish a convention that any operations that cause writes should be sent explicitly via a mutation.
-
-Just like in queries, if the mutation field returns an object type, you can ask for nested fields. This can be useful for fetching the new state of an object after an update. Let's look at a simple example mutation:
+쿼리를 구현하여 데이터 쓰기할 수도 있지만, Mutations을 통해 명시적으로 보내야 한다는 규칙을 설정하는 것이 유용합니다.쿼리와 마찬가지로 결과 객체 유형을 반환할 수 있습니다.
 
 ```graphql
 # { "graphiql": true, "variables": { "ep": "JEDI", "review": { "stars": 5, "commentary": "This is a great movie!" } } }
@@ -282,24 +237,19 @@ mutation CreateReviewForEpisode($ep: Episode!, $review: ReviewInput!) {
 }
 ```
 
-Note how `createReview` field returns the `stars` and `commentary` fields of the newly created review. This is especially useful when mutating existing data, for example, when incrementing a field, since we can mutate and query the new value of the field with one request.
-
-You might also notice that, in this example, the `review` variable we passed in is not a scalar. It's an _input object type_, a special kind of object type that can be passed in as an argument. Learn more about input types on the Schema page.
-
 ### Multiple fields in mutations
 
-A mutation can contain multiple fields, just like a query. There's one important distinction between queries and mutations, other than the name:
+쿼리와 변형 사이에는 이름 외에 한 가지 중요한 차이점이 있습니다:
 
-**While query fields are executed in parallel, mutation fields run in series, one after the other.**
+**query fields가 parallel로 실행되는 동안 mutation fields는 차례대로 실행됩니다.**
 
-This means that if we send two `incrementCredits` mutations in one request, the first is guaranteed to finish before the second begins, ensuring that we don't end up with a race condition with ourselves.
-
+첫 번째는 두 번째가 시작되기 전에 완료되도록 보장하고 race condition이 발생되지 않도록 합니다.
 
 ## Inline Fragments
 
-Like many other type systems, GraphQL schemas include the ability to define interfaces and union types. [Learn about them in the schema guide.](/learn/schema/#interfaces)
+Interface or a union type을 반환하는 필드를 쿼리하는 경우 *inline fragments*을 사용하여 concrete type의 데이터에 액세스해야 합니다.
 
-If you are querying a field that returns an interface or a union type, you will need to use *inline fragments* to access data on the underlying concrete type. It's easiest to see with an example:
+`hero` field는 에피소드 인수에 따라 `Human` 또는 `Droid`가 될 수 있는 `Character` 유형을 반환합니다. 직접 선택에서는 이름과 같이 `Character` 인터페이스에 존재하는 필드만 요청할 수 있습니다.
 
 ```graphql
 # { "graphiql": true, "variables": { "ep": "JEDI" } }
@@ -316,16 +266,11 @@ query HeroForEpisode($ep: Episode!) {
 }
 ```
 
-In this query, the `hero` field returns the type `Character`, which might be either a `Human` or a `Droid` depending on the `episode` argument. In the direct selection, you can only ask for fields that exist on the `Character` interface, such as `name`.
-
-To ask for a field on the concrete type, you need to use an _inline fragment_ with a type condition. Because the first fragment is labeled as `... on Droid`, the `primaryFunction` field will only be executed if the `Character` returned from `hero` is of the `Droid` type. Similarly for the `height` field for the `Human` type.
-
-Named fragments can also be used in the same way, since a named fragment always has a type attached.
-
-
 ### Meta fields
 
-Given that there are some situations where you don't know what type you'll get back from the GraphQL service, you need some way to determine how to handle that data on the client. GraphQL allows you to request `__typename`, a meta field, at any point in a query to get the name of the object type at that point.
+`__typename`을 요청하여 해당 지점의 개체 유형 이름을 가져올 수 있습니다.
+
+GraphQL 서비스는 몇 가지 메타 필드를 제공하며 나머지는 [Introspection](../introspection/) system을 노출하는 데 사용됩니다.
 
 ```graphql
 # { "graphiql": true}
@@ -344,8 +289,3 @@ Given that there are some situations where you don't know what type you'll get b
   }
 }
 ```
-
-In the above query, `search` returns a union type that can be one of three options. It would be impossible to tell apart the different types from the client without the `__typename` field.
-
-GraphQL services provide a few meta fields, the rest of which are used to expose the [Introspection](../introspection/) system.
-

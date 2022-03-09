@@ -6,19 +6,7 @@ permalink: /learn/validation/
 next: /learn/execution/
 ---
 
-By using the type system, it can be predetermined whether a GraphQL query
-is valid or not. This allows servers and clients to effectively inform
-developers when an invalid query has been created, without having to rely
-on runtime checks.
-
-For our Star Wars example, the file
-[starWarsValidation-test.ts](https://github.com/graphql/graphql-js/blob/main/src/__tests__/starWarsValidation-test.ts)
-contains a number of queries demonstrating various invalidities, and is a test
-file that can be run to exercise the reference implementation's validator.
-
-To start, let's take a complex valid query. This is a nested query, similar to
-an example from the previous section, but with the duplicated fields factored
-out into a fragment:
+GraphQL 쿼리가 유효한지 여부를 미리 결정할 수 있습니다. 이를 통해 서버와 클라이언트는 런타임 검사에 의존하지 않고도 유효하지 않은 쿼리가 생성되었을 때 개발자에게 효과적으로 알릴 수 있습니다.
 
 ```graphql
 # { "graphiql": true }
@@ -40,11 +28,7 @@ fragment NameAndAppearances on Character {
 }
 ```
 
-And this query is valid. Let's take a look at some invalid queries...
-
-A fragment cannot refer to itself or create a cycle, as this could result in
-an unbounded result! Here's the same query above but without the explicit three
-levels of nesting:
+프래그먼트는 자신을 참조하거나 순환을 생성할 수 없습니다. 결과가 제한되지 않을 수 있기 때문입니다:
 
 ```graphql
 # { "graphiql": true }
@@ -63,10 +47,7 @@ fragment NameAndAppearancesAndFriends on Character {
 }
 ```
 
-When we query for fields, we have to query for a field that exists on the
-given type. So as `hero` returns a `Character`, we have to query for a field
-on `Character`. That type does not have a `favoriteSpaceship` field, so this
-query is invalid:
+필드를 쿼리할 때 주어진 유형에 존재하는 필드를 쿼리해야 합니다. 따라서 `Hero`가 `Character`를 반환하면 `Character`에 대한 필드를 쿼리해야 합니다.
 
 ```graphql
 # { "graphiql": true }
@@ -78,10 +59,7 @@ query is invalid:
 }
 ```
 
-Whenever we query for a field and it returns something other than a scalar
-or an enum, we need to specify what data we want to get back from the field.
-Hero returns a `Character`, and we've been requesting fields like `name` and
-`appearsIn` on it; if we omit that, the query will not be valid:
+필드에서 반환하려는 데이터를 지정해야 합니다.
 
 ```graphql
 # { "graphiql": true }
@@ -91,8 +69,7 @@ Hero returns a `Character`, and we've been requesting fields like `name` and
 }
 ```
 
-Similarly, if a field is a scalar, it doesn't make sense to query for
-additional fields on it, and doing so will make the query invalid:
+필드가 스칼라인 경우 추가 필드를 쿼리하는 것은 의미가 없으며 그렇게 하면 쿼리가 무효화됩니다.
 
 ```graphql
 # { "graphiql": true }
@@ -106,10 +83,7 @@ additional fields on it, and doing so will make the query invalid:
 }
 ```
 
-Earlier, it was noted that a query can only query for fields on the type
-in question; when we query for `hero` which returns a `Character`, we
-can only query for fields that exist on `Character`. What happens if we
-want to query for R2-D2s primary function, though?
+`Character`를 반환하는 Hero를 쿼리할 때 `Character`가 `Droid`이면 `primaryFunction`을 가져오고 그렇지 않으면 해당 필드를 무시한다는 것을 나타내는 방법이 필요합니다. 이를 위해 앞서 소개한 Fragment을 사용할 수 있습니다.
 
 ```graphql
 # { "graphiql": true }
@@ -121,13 +95,6 @@ want to query for R2-D2s primary function, though?
   }
 }
 ```
-
-That query is invalid, because `primaryFunction` is not a field on `Character`.
-We want some way of indicating that we wish to fetch `primaryFunction` if the
-`Character` is a `Droid`, and to ignore that field otherwise. We can use
-the fragments we introduced earlier to do this. By setting up a fragment defined
-on `Droid` and including it, we ensure that we only query for `primaryFunction`
-where it is defined.
 
 ```graphql
 # { "graphiql": true }
@@ -143,11 +110,7 @@ fragment DroidFields on Droid {
 }
 ```
 
-This query is valid, but it's a bit verbose; named fragments were valuable
-above when we used them multiple times, but we're only using this one once.
-Instead of using a named fragment, we can use an inline fragment; this
-still allows us to indicate the type we are querying on, but without naming
-a separate fragment:
+인라인 fragment 사용
 
 ```graphql
 # { "graphiql": true }
@@ -160,11 +123,3 @@ a separate fragment:
   }
 }
 ```
-
-This has just scratched the surface of the validation system; there
-are a number of validation rules in place to ensure that a GraphQL query
-is semantically meaningful. The specification goes into more detail about this
-topic in the "Validation" section, and the
-[validation](https://github.com/graphql/graphql-js/blob/main/src/validation)
-directory in GraphQL.js contains code implementing a
-specification-compliant GraphQL validator.

@@ -3,12 +3,8 @@ title: Execution
 layout: docs
 category: Learn
 permalink: /learn/execution/
-next: /learn/introspection/
+next: /learn/thinking-in-graphs/
 ---
-
-After being validated, a GraphQL query is executed by a GraphQL server which returns a result that mirrors the shape of the requested query, typically as JSON.
-
-GraphQL cannot execute a query without a type system, let's use an example type system to illustrate executing a query. This is a part of the same type system used throughout the examples in these articles:
 
 ```graphql
 type Query {
@@ -32,8 +28,6 @@ type Starship {
 }
 ```
 
-In order to describe what happens when a query is executed, let's use an example to walk through.
-
 ```graphql
 # { "graphiql": true }
 {
@@ -47,16 +41,15 @@ In order to describe what happens when a query is executed, let's use an example
 }
 ```
 
-You can think of each field in a GraphQL query as a function or method of the previous type which returns the next type. In fact, this is exactly how GraphQL works. Each field on each type is backed by a function called the *resolver* which is provided by the GraphQL server developer. When a field is executed, the corresponding *resolver* is called to produce the next value.
+각 유형의 각 필드는 GraphQL 서버 개발자가 제공하는 *resolver*라는 함수로 뒷받침됩니다. 필드가 실행되면 해당 *resolver*가 호출되어 다음 값을 생성합니다.
 
-If a field produces a scalar value like a string or number, then the execution completes. However if a field produces an object value then the query will contain another selection of fields which apply to that object. This continues until scalar values are reached. GraphQL queries always end at scalar values.
-
+필드가 문자열이나 숫자와 같은 스칼라 값을 생성하면 실행이 완료됩니다. 그러나 필드가 object value을 생성하는 경우 쿼리에는 해당 개체에 적용되는 다른 필드 선택이 포함됩니다. 이것은 스칼라 값에 도달할 때까지 계속됩니다. GraphQL 쿼리는 항상 스칼라 값에서 끝납니다.
 
 ## Root fields & resolvers
 
-At the top level of every GraphQL server is a type that represents all of the possible entry points into the GraphQL API, it's often called the *Root* type or the *Query* type.
+GraphQL API에 대한 가능한 모든 entry points을 나타내는 유형이 있으며, 이를 종종 _Root_ type or the _Query_ type이라고 합니다.
 
-In this example, our Query type provides a field called `human` which accepts the argument `id`. The resolver function for this field likely accesses a database and then constructs and returns a `Human` object.
+이 예에서 쿼리 유형은 `id` 인수를 허용하는 `human`이라는 필드를 제공합니다.
 
 ```js
 Query: {
@@ -68,12 +61,12 @@ Query: {
 }
 ```
 
-This example is written in JavaScript, however GraphQL servers can be built in [many different languages](/code/). A resolver function receives four arguments:
+리졸버 함수는 4개의 인수를 받습니다.:
 
-- `obj` The previous object, which for a field on the root Query type is often not used.
-- `args` The arguments provided to the field in the GraphQL query.
-- `context` A value which is provided to every resolver and holds important contextual information like the currently logged in user, or access to a database.
-- `info` A value which holds field-specific information relevant to the current query as well as the schema details, also refer to [type GraphQLResolveInfo for more details](/graphql-js/type/#graphqlobjecttype).
+- `obj` The previous object, root Query type에선 사용하지 않음.
+- `args` GraphQL 쿼리의 필드에 제공된 인수입니다.
+- `context` 모든 resolver에 제공되며 현재 로그인한 사용자 또는 데이터베이스에 대한 액세스와 같은 중요한 컨텍스트 정보를 보유하는 값
+- `info` 현재 쿼리 및 스키마 세부 정보와 관련된 필드별 정보를 보유하는 값
 
 ## Asynchronous resolvers
 
@@ -87,14 +80,7 @@ human(obj, args, context, info) {
 }
 ```
 
-The `context` is used to provide access to a database which is used to load the data for a user by the `id` provided as an argument in the GraphQL query. Since loading from a database is an asynchronous operation, this returns a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). In JavaScript, Promises are used to work with asynchronous values, but the same concept exists in many languages, often called *Futures*, *Tasks* or *Deferred*. When the database returns, we can construct and return a new `Human` object.
-
-Notice that while the resolver function needs to be aware of Promises, the GraphQL query does not. It simply expects the `human` field to return something which it can then ask the `name` of. During execution, GraphQL will wait for Promises, Futures, and Tasks to complete before continuing and will do so with optimal concurrency.
-
-
 ## Trivial resolvers
-
-Now that a `Human` object is available, GraphQL execution can continue with the fields requested on it.
 
 ```js
 Human: {
@@ -104,16 +90,11 @@ Human: {
 }
 ```
 
-A GraphQL server is powered by a type system which is used to determine what to do next. Even before the `human` field returns anything, GraphQL knows that the next step will be to resolve fields on the `Human` type since the type system tells it that the `human` field will return a `Human`.
-
-Resolving the name in this case is very straight-forward. The name resolver function is called and the `obj` argument is the `new Human` object returned from the previous field. In this case, we expect that Human object to have a `name` property which we can read and return directly.
-
-In fact, many GraphQL libraries will let you omit resolvers this simple and will just assume that if a resolver isn't provided for a field, that a property of the same name should be read and returned.
-
+GraphQL 라이브러리에서 이렇게 간단한 리졸버를 생략할 수 있으며 필드에 리졸버가 제공되지 않으면 동일한 이름의 속성을 읽고 반환합니다.
 
 ## Scalar coercion
 
-While the `name` field is being resolved, the `appearsIn` and `starships` fields can be resolved concurrently. The `appearsIn` field could also have a trivial resolver, but let's take a closer look:
+`name` 필드가 해결되는 동안 `appearsIn` 및 `starships` 필드는 concurrently하게 resolved될 수 있습니다.
 
 ```js
 Human: {
@@ -123,14 +104,9 @@ Human: {
 }
 ```
 
-Notice that our type system claims `appearsIn` will return Enum values with known values, however this function is returning numbers! Indeed if we look up at the result we'll see that the appropriate Enum values are being returned. What's going on?
-
-This is an example of scalar coercion. The type system knows what to expect and will convert the values returned by a resolver function into something that upholds the API contract. In this case, there may be an Enum defined on our server which uses numbers like `4`, `5`, and `6` internally, but represents them as Enum values in the GraphQL type system.
-
+내부적으로 4, 5, 6과 같은 숫자를 사용하지만 GraphQL 유형 시스템에서 Enum 값으로 나타내는 Enum이 서버에 정의되어 있을 수 있습니다.
 
 ## List resolvers
-
-We've already seen a bit of what happens when a field returns a list of things with the `appearsIn` field above. It returned a *list* of enum values, and since that's what the type system expected, each item in the list was coerced to the appropriate enum value. What happens when the `starships` field is resolved?
 
 ```js
 Human: {
@@ -144,16 +120,11 @@ Human: {
 }
 ```
 
-The resolver for this field is not just returning a Promise, it's returning a *list* of Promises. The `Human` object had a list of ids of the `Starships` they piloted, but we need to go load all of those ids to get real Starship objects.
-
-GraphQL will wait for all of these Promises concurrently before continuing, and when left with a list of objects, it will concurrently continue yet again to load the `name` field on each of these items.
-
+GraphQL은 이러한 모든 비동기 요청을 동시에 기다리며, 이러한 각 항목에 대한 `name` 필드를 로드하기 위해 동시에 다시 계속 resolved됩니다.
 
 ## Producing the result
 
-As each field is resolved, the resulting value is placed into a key-value map with the field name (or alias) as the key and the resolved value as the value. This continues from the bottom leaf fields of the query all the way back up to the original field on the root Query type. Collectively these produce a structure that mirrors the original query which can then be sent (typically as JSON) to the client which requested it.
-
-Let's take one last look at the original query to see how all these resolving functions produce a result:
+각 필드가 확인되면 결과 값은 필드 이름(또는 별칭)을 키로, 확인된 값을 값으로 사용하여 키-값 맵에 배치됩니다. 이것은 쿼리의 맨 아래 리프 필드에서 루트 쿼리 유형의 원래 필드까지 계속됩니다.
 
 ```graphql
 # { "graphiql": true }

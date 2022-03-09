@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "build": "gatsby build",
-    "develop": "GATSBY_GRAPHQL_IDE=playground gatsby develop",
+    "develop": "cross-env GATSBY_GRAPHQL_IDE=playground gatsby develop",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "start": "npm run develop",
     "serve": "gatsby serve",
@@ -21,6 +21,7 @@
     "assert": "2.0.0",
     "codemirror": "5.65.1",
     "codemirror-graphql": "1.2.11",
+    "cross-env": "^7.0.3",
     "gatsby": "4.7.2",
     "gatsby-plugin-anchor-links": "1.2.1",
     "gatsby-plugin-feed": "4.7.0",

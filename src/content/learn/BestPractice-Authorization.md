@@ -6,11 +6,11 @@ permalink: /learn/authorization/
 next: /learn/pagination/
 ---
 
-> Delegate authorization logic to the business logic layer
+> 비즈니스 로직 계층에 권한 부여 로직 위임
 
 Authorization is a type of business logic that describes whether a given user/session/context has permission to perform an action or see a piece of data. For example:
 
-*“Only authors can see their drafts”*
+_“Only authors can see their drafts”_
 
 Enforcing this kind of behavior should happen in the [business logic layer](/learn/thinking-in-graphs/#business-logic-layer). It is tempting to place authorization logic in the GraphQL layer like so:
 
