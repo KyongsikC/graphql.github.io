@@ -1,0 +1,5 @@
+{
+    "componentChunkName": "component---src-pages-blog-blog-post-post-id-tsx",
+    "path": "/blog/2018-11-07-sd-times-lf-announces-plans-to-form-graphql-foundation/",
+    "result": {"data":{"blogPost":{"title":"SD Times: The Linux Foundation announces plans to form GraphQL foundation","date":"2018-11-07","authors":["SD Times"],"tags":["in-the-news"],"guestBio":null,"remark":{"rawMarkdownBody":"\nIn an effort to grow and sustain the GraphQL ecosystem, The Linux Foundation has announced plans to launch a new open-source foundation for it. GraphQL is an [API](https://sdtimes.com/tag/apis/) technology that was initially developed by Facebook.\n\nThe GraphQL Foundation will be a collaborative effort between industry leaders and users.\n\n[Read more »](https://sdtimes.com/api/the-linux-foundation-announces-plans-to-form-graphql-foundation/)\n"}}},"pageContext":{"id":"6e5271a1-5fe1-588b-a868-52143c08d2cb","postId":"2018-11-07-sd-times-lf-announces-plans-to-form-graphql-foundation","__params":{"postId":"2018-11-07-sd-times-lf-announces-plans-to-form-graphql-foundation"}}},
+    "staticQueryHashes": ["1581580458","2616045547"]}

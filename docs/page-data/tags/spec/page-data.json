@@ -1,0 +1,5 @@
+{
+    "componentChunkName": "component---src-templates-blog-post-tags-tsx",
+    "path": "/tags/spec/",
+    "result": {"data":{"allBlogPost":{"nodes":[{"id":"a7099d33-f443-531f-a424-d58ec2cbf28f","title":"Subscriptions in GraphQL and Relay","date":"2015-10-16","authors":["Dan Schafer and Laney Kuenzel"],"tags":["blog","spec"],"postPath":"/blog/subscriptions-in-graphql-and-relay/","remark":{"excerpt":"When we announced and open-sourced GraphQL and Relay this year, we described how they can be used to perform reads with queries, and to…"}},{"id":"28894325-8585-59e2-a293-44992451900a","title":"GraphQL: A data query language","date":"2015-09-14","authors":["Lee Byron"],"tags":["blog","spec"],"postPath":"/blog/graphql-a-query-language/","remark":{"excerpt":"When we built Facebook's mobile applications, we needed a data-fetching API powerful enough to describe all of Facebook, yet simple and easy…"}}]}},"pageContext":{"tag":"spec"}},
+    "staticQueryHashes": ["1581580458","2616045547"]}

@@ -1,0 +1,5 @@
+{
+    "componentChunkName": "component---src-pages-blog-blog-post-post-id-tsx",
+    "path": "/blog/2018-11-07-the-register/",
+    "result": {"data":{"blogPost":{"title":"The Register: Facebook’s open-source license drama-zone GraphQL gets swanky digs in Linux mansion","date":"2018-11-07","authors":["The Register"],"tags":["in-the-news"],"guestBio":null,"remark":{"rawMarkdownBody":"\nGraphQL, a query language for APIs that was on the verge of being shunned last year over software license concerns, has bounced back and landed in the arms of the Linux Foundation. \n\n[Read more »](https://www.theregister.co.uk/2018/11/07/graphql_on_linux/)"}}},"pageContext":{"id":"5a4afea5-ca88-507d-be96-08c3d51c0dd6","postId":"2018-11-07-the-register","__params":{"postId":"2018-11-07-the-register"}}},
+    "staticQueryHashes": ["1581580458","2616045547"]}

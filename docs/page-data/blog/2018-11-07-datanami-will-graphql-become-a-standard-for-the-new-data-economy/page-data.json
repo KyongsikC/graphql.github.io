@@ -1,0 +1,5 @@
+{
+    "componentChunkName": "component---src-pages-blog-blog-post-post-id-tsx",
+    "path": "/blog/2018-11-07-datanami-will-graphql-become-a-standard-for-the-new-data-economy/",
+    "result": {"data":{"blogPost":{"title":"Datanami: Will GraphQL Become a Standard for the New Data Economy?","date":"2018-11-07","authors":["Datanami"],"tags":["in-the-news"],"guestBio":null,"remark":{"rawMarkdownBody":"\nDon’t look now but a new language called GraphQL is emerging that could radically simplify how developers use APIs to get data into applications, and potentially provide a graph-like alternative to procedural REST. The company behind the open source software, Apollo, today announced the GraphQL Platform to standardize access to the new technology.\n\n[Read more »](https://www.datanami.com/2018/11/07/will-graphql-become-a-standard-for-the-new-data-economy/)\n"}}},"pageContext":{"id":"1f1b8c7c-4950-5ad9-a282-05a9ff3a90f9","postId":"2018-11-07-datanami-will-graphql-become-a-standard-for-the-new-data-economy","__params":{"postId":"2018-11-07-datanami-will-graphql-become-a-standard-for-the-new-data-economy"}}},
+    "staticQueryHashes": ["1581580458","2616045547"]}
