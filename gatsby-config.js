@@ -1,4 +1,5 @@
 module.exports = {
+  pathPrefix: '/graphql.github.io',
   siteMetadata: {
     title: "GraphQL",
     description:
